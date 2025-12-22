@@ -10,11 +10,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookingEntity {
+public class Booking {
     private UUID bookingId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-    private GuestEntity guest;
-    private RoomEntity room;
+    private Guest guest;
+    private Room room;
+    private String status;
 
 }

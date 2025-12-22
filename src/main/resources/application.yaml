@@ -2,9 +2,12 @@ spring:
   application:
     name: hotel-booking
   datasource:
-    url: jdbc:postgresql://localhost:5432/booking
+    url: jdbc:postgresql://localhost:5433/booking?currentSchema=hotel
     username: booking
     password: booking
     driver-class-name: org.postgresql.Driver
+
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
+    liquibase-schema: public
+

@@ -1,7 +1,7 @@
-package edu.booking.hotel_booking.exceptions;
+package edu.booking.hotel_booking.exception;
 
 public class NotFoundException extends RuntimeException {
-  public NotFoundException(String message) {
-    super(message);
-  }
+    public NotFoundException(String message) {
+        super(message);
+    }
 }

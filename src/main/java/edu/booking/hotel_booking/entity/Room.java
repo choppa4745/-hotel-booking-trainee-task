@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomEntity {
+public class Room {
     private UUID roomId;
     private int floor;
     private String number;

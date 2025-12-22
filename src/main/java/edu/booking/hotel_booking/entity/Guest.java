@@ -3,6 +3,7 @@ package edu.booking.hotel_booking.entity;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -11,11 +12,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GuestEntity {
+public class Guest {
     private UUID guestId;
     private String firstName;
     private String lastName;
     private String middleName;
-    private String date_of_birth;
+    private LocalDate dateOfBirth;
     private String phone;
 }

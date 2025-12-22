@@ -1,30 +1,31 @@
 package edu.booking.hotel_booking.controller;
 
-import edu.booking.hotel_booking.dto.Guest;
+import edu.booking.hotel_booking.dto.GuestDto;
+import edu.booking.hotel_booking.entity.Guest;
+import edu.booking.hotel_booking.service.GuestService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/guests")
+@RequestMapping("/api/guests")
 public class GuestController {
 
-    // Добавить гостя
-    @PostMapping
-    public ResponseEntity<?> addGuest(@RequestBody Guest request) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    private final GuestService guestService;
+
+    public GuestController(GuestService guestService) {
+        this.guestService = guestService;
     }
 
-    // Редактировать гостя
+    @PostMapping
+    public ResponseEntity<Guest> create(@RequestBody GuestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(guestService.createGuest(request));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateGuest(
-            @PathVariable Long id,
-            @RequestBody Guest request
-    ) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<Guest> update(@PathVariable UUID id, @RequestBody GuestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(guestService.updateGuest(id, request));
     }
 }
