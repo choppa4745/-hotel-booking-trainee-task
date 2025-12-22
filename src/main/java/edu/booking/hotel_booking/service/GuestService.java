@@ -8,6 +8,7 @@ import edu.booking.hotel_booking.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,6 +18,10 @@ public class GuestService {
 
     public GuestService(GuestDao guestDao) {
         this.guestDao = guestDao;
+    }
+
+    public List<Guest> getAllGuests() {
+        return guestDao.findAll();
     }
 
     public Guest createGuest(GuestDto request) {

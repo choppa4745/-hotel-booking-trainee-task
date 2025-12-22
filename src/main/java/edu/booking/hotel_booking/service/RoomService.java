@@ -21,6 +21,10 @@ public class RoomService {
         this.roomDao = roomDao;
     }
 
+    public List<Room> getAllRooms() {
+        return roomDao.findAll();
+    }
+
     public Room createRoom(RoomDto request) {
         validateRoom(request);
         return roomDao.create(request);

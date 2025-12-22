@@ -10,9 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class GuestDao {
@@ -36,6 +34,16 @@ public class GuestDao {
                     .build();
         }
     };
+
+    public List<Guest> findAll() {
+        String sql = """
+            SELECT guest_id, first_name, last_name, middle_name, date_of_birth, phone
+              FROM hotel.guest
+             ORDER BY last_name, first_name, guest_id
+            """;
+
+        return jdbcTemplate.query(sql, Collections.emptyMap(), GUEST_ROW_MAPPER);
+    }
 
     public Guest create(GuestDto dto) {
         UUID id = UUID.randomUUID();

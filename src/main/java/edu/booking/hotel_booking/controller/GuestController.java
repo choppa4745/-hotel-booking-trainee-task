@@ -7,25 +7,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/guests")
 public class GuestController {
 
-    private final GuestService guestService;
+    private final GuestService service;
 
     public GuestController(GuestService guestService) {
-        this.guestService = guestService;
+        this.service = guestService;
     }
+
+    @GetMapping
+    public ResponseEntity<List<Guest>> getAll(){
+        return ResponseEntity.ok(service.getAllGuests());
+    }
+
 
     @PostMapping
     public ResponseEntity<Guest> create(@RequestBody GuestDto request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(guestService.createGuest(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createGuest(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Guest> update(@PathVariable UUID id, @RequestBody GuestDto request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(guestService.updateGuest(id, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.updateGuest(id, request));
     }
 }

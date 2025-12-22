@@ -1,6 +1,7 @@
 package edu.booking.hotel_booking.controller;
 
 import edu.booking.hotel_booking.dto.RoomDto;
+import edu.booking.hotel_booking.entity.Guest;
 import edu.booking.hotel_booking.entity.Room;
 import edu.booking.hotel_booking.service.RoomService;
 import org.springframework.http.HttpStatus;
@@ -14,25 +15,30 @@ import java.util.UUID;
 @RequestMapping("/api/rooms")
 public class RoomController {
 
-    private final RoomService roomService;
+    private final RoomService service;
 
     public RoomController(RoomService roomService) {
-        this.roomService = roomService;
+        this.service = roomService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Room>> getAll(){
+        return ResponseEntity.ok(service.getAllRooms());
     }
 
     @PostMapping
     public ResponseEntity<Room> create(@RequestBody RoomDto request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomService.createRoom(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createRoom(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Room> update(@PathVariable UUID id, @RequestBody RoomDto request) {
-        return ResponseEntity.ok(roomService.updateRoom(id, request));
+        return ResponseEntity.ok(service.updateRoom(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        roomService.deleteRoom(id);
+        service.deleteRoom(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -47,6 +53,6 @@ public class RoomController {
             @RequestParam String checkOutDate,
             @RequestParam(required = false) Integer minGuests
     ) {
-        return roomService.findFreeRooms(checkInDate, checkOutDate, minGuests);
+        return service.findFreeRooms(checkInDate, checkOutDate, minGuests);
     }
 }

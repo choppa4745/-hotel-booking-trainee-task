@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,6 +29,10 @@ public class BookingService {
         this.bookingDao = bookingDao;
         this.guestDao = guestDao;
         this.roomDao = roomDao;
+    }
+
+    public List<Booking> getAllBookings() {
+        return bookingDao.findAll();
     }
 
     @Transactional
