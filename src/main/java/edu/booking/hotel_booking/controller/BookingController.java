@@ -22,10 +22,12 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Booking>> getAll(){
-        return ResponseEntity.ok(service.getAllBookings());
+    public ResponseEntity<List<Booking>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+        return ResponseEntity.ok(service.getAllBookings(page, size));
     }
-
     @PostMapping
     public ResponseEntity<Booking> create(@RequestBody BookingDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.createBooking(request));

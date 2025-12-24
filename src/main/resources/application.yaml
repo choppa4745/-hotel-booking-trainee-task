@@ -6,8 +6,21 @@ spring:
     username: booking
     password: booking
     driver-class-name: org.postgresql.Driver
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring.json.add.type.headers: false
 
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
     liquibase-schema: public
 
+app:
+  kafka:
+    topics:
+      guest: hotel-booking.guest
+      room: hotel-booking.room
+      booking: hotel-booking.booking

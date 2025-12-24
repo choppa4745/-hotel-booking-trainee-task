@@ -58,7 +58,7 @@ class BookingDaoIT extends AbstractPostgresIT {
                 VALUES (?, ?, ?, ?, ?, ?)
                 """, b2, LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 3), guestId, roomId, "CANCELLED");
 
-        List<Booking> bookings = bookingDao.findAll();
+        List<Booking> bookings = bookingDao.findAll(10,0);
 
         assertThat(bookings).hasSize(2);
         assertThat(bookings)

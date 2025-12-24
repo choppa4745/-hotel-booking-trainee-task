@@ -45,7 +45,7 @@ class GuestDaoIT extends AbstractPostgresIT {
                 VALUES (?, ?, ?, ?, ?, ?)
                 """, g2, "Petr", "Petrov", "Sergeevich", LocalDate.of(1985, 5, 5), "+79990000002");
 
-        List<Guest> guests = guestDao.findAll();
+        List<Guest> guests = guestDao.findAll(10,0);
         assertThat(guests).hasSize(2);
         assertThat(guests)
                 .extracting(Guest::getGuestId)

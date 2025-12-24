@@ -3,6 +3,9 @@ package edu.booking.hotel_booking.service;
 import edu.booking.hotel_booking.dao.GuestDao;
 import edu.booking.hotel_booking.dto.GuestDto;
 import edu.booking.hotel_booking.entity.Guest;
+import edu.booking.hotel_booking.kafka.event.EventType;
+import edu.booking.hotel_booking.kafka.tx.GuestDomainEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import edu.booking.hotel_booking.exception.NotFoundException;
 import edu.booking.hotel_booking.exception.ValidationException;
 import org.springframework.stereotype.Service;
@@ -15,18 +18,30 @@ import java.util.UUID;
 public class GuestService {
 
     private final GuestDao guestDao;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public GuestService(GuestDao guestDao) {
+
+    public GuestService(GuestDao guestDao, ApplicationEventPublisher eventPublisher) {
         this.guestDao = guestDao;
+        this.eventPublisher = eventPublisher;
+
     }
 
-    public List<Guest> getAllGuests() {
-        return guestDao.findAll();
+    public List<Guest> getAllGuests(int page, int size) {
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int safePage = Math.max(page, 0);
+
+        int limit = safeSize;
+        int offset = safePage * safeSize;
+
+        return guestDao.findAll(limit, offset);
     }
 
     public Guest createGuest(GuestDto request) {
         validateGuest(request);
-        return guestDao.create(request);
+        Guest created = guestDao.create(request);
+        eventPublisher.publishEvent(new GuestDomainEvent(created.getGuestId(), EventType.CREATED));
+        return created;
     }
 
     public Guest updateGuest(UUID id, GuestDto request) {
@@ -37,8 +52,11 @@ public class GuestService {
             throw new NotFoundException("Guest not found: " + id);
         }
 
-        return guestDao.findById(id)
+        Guest result = guestDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("Guest not found after update: " + id));
+
+        eventPublisher.publishEvent(new GuestDomainEvent(id, EventType.UPDATED));
+        return result;
     }
 
     private void validateGuest(GuestDto request) {

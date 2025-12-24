@@ -53,14 +53,16 @@ public class BookingDao {
         }
     };
 
-    public List<Booking> findAll() {
+    public List<Booking> findAll(int limit, int offset) {
         String sql = """
-            SELECT booking_id, check_in_date, check_out_date, guest_id, room_id, status
-              FROM hotel.booking
-             ORDER BY check_in_date DESC, booking_id
-            """;
+        SELECT booking_id, check_in_date, check_out_date, guest_id, room_id, status
+          FROM hotel.booking
+         ORDER BY check_in_date DESC, booking_id
+         LIMIT :limit OFFSET :offset
+        """;
 
-        return jdbcTemplate.query(sql, Collections.emptyMap(), BOOKING_WITH_JOIN_ROW_MAPPER);
+        Map<String, Object> params = Map.of("limit", limit, "offset", offset);
+        return jdbcTemplate.query(sql, params, BOOKING_WITH_JOIN_ROW_MAPPER);
     }
 
     public boolean existsConflict(UUID roomId, LocalDate checkIn, LocalDate checkOut, UUID excludeBookingId) {

@@ -21,8 +21,11 @@ public class GuestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Guest>> getAll(){
-        return ResponseEntity.ok(service.getAllGuests());
+    public ResponseEntity<List<Guest>> getAll(
+                  @RequestParam(defaultValue = "0") int page,
+                  @RequestParam(defaultValue = "20") int size
+    ){
+        return ResponseEntity.ok(service.getAllGuests(page, size));
     }
 
 

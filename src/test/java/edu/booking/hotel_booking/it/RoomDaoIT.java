@@ -44,7 +44,7 @@ class RoomDaoIT extends AbstractPostgresIT {
                 VALUES (?, ?, ?, ?)
                 """, r2, 1, "101", 3);
 
-        List<Room> rooms = roomDao.findAll();
+        List<Room> rooms = roomDao.findAll(10,0);
 
         assertThat(rooms).hasSize(2);
         assertThat(rooms)

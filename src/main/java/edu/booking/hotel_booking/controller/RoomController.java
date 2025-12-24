@@ -22,8 +22,11 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAll(){
-        return ResponseEntity.ok(service.getAllRooms());
+    public ResponseEntity<List<Room>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+        return ResponseEntity.ok(service.getAllRooms(page, size));
     }
 
     @PostMapping

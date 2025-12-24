@@ -33,14 +33,16 @@ public class RoomDao {
         }
     };
 
-    public List<Room> findAll() {
+    public List<Room> findAll(int limit, int offset) {
         String sql = """
-            SELECT room_id, floor, number, number_of_guests
-              FROM hotel.room
-             ORDER BY floor, number
-            """;
+        SELECT room_id, floor, number, number_of_guests
+          FROM hotel.room
+         ORDER BY floor, number, room_id
+         LIMIT :limit OFFSET :offset
+        """;
 
-        return jdbcTemplate.query(sql, Collections.emptyMap(), ROOM_ROW_MAPPER);
+        Map<String, Object> params = Map.of("limit", limit, "offset", offset);
+        return jdbcTemplate.query(sql, params, ROOM_ROW_MAPPER);
     }
 
     public Room create(RoomDto dto) {

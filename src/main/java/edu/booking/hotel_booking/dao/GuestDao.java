@@ -35,14 +35,16 @@ public class GuestDao {
         }
     };
 
-    public List<Guest> findAll() {
+    public List<Guest> findAll(int limit, int offset) {
         String sql = """
-            SELECT guest_id, first_name, last_name, middle_name, date_of_birth, phone
-              FROM hotel.guest
-             ORDER BY last_name, first_name, guest_id
-            """;
+        SELECT guest_id, first_name, last_name, middle_name, date_of_birth, phone
+          FROM hotel.guest
+         ORDER BY last_name, first_name, guest_id
+         LIMIT :limit OFFSET :offset
+        """;
 
-        return jdbcTemplate.query(sql, Collections.emptyMap(), GUEST_ROW_MAPPER);
+        Map<String, Object> params = Map.of("limit", limit, "offset", offset);
+        return jdbcTemplate.query(sql, params, GUEST_ROW_MAPPER);
     }
 
     public Guest create(GuestDto dto) {

@@ -7,6 +7,9 @@ import edu.booking.hotel_booking.dto.BookingDto;
 import edu.booking.hotel_booking.entity.Booking;
 import edu.booking.hotel_booking.entity.Guest;
 import edu.booking.hotel_booking.entity.Room;
+import edu.booking.hotel_booking.kafka.event.EventType;
+import edu.booking.hotel_booking.kafka.tx.BookingDomainEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import edu.booking.hotel_booking.exception.ConflictException;
 import edu.booking.hotel_booking.exception.NotFoundException;
 import edu.booking.hotel_booking.exception.ValidationException;
@@ -24,15 +27,24 @@ public class BookingService {
     private final BookingDao bookingDao;
     private final GuestDao guestDao;
     private final RoomDao roomDao;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public BookingService(BookingDao bookingDao, GuestDao guestDao, RoomDao roomDao) {
+    public BookingService(BookingDao bookingDao, GuestDao guestDao, RoomDao roomDao,
+                          ApplicationEventPublisher eventPublisher) {
         this.bookingDao = bookingDao;
         this.guestDao = guestDao;
         this.roomDao = roomDao;
+        this.eventPublisher = eventPublisher;
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingDao.findAll();
+    public List<Booking> getAllBookings(int page, int size) {
+        int safeSize = Math.min(Math.max(size, 1), 100);
+        int safePage = Math.max(page, 0);
+
+        int limit = safeSize;
+        int offset = safePage * safeSize;
+
+        return bookingDao.findAll(limit, offset);
     }
 
     @Transactional
@@ -62,7 +74,11 @@ public class BookingService {
         dto.setGuest(guest);
         dto.setRoom(room);
 
-        return bookingDao.create(dto);
+        Booking created = bookingDao.create(dto);
+        eventPublisher.publishEvent(
+                new BookingDomainEvent(created.getBookingId(), roomId, guestId, EventType.CREATED)
+        );
+        return created;
     }
 
     @Transactional
@@ -102,19 +118,39 @@ public class BookingService {
             throw new NotFoundException("Booking not found: " + bookingId);
         }
 
-        return bookingDao.findById(bookingId)
+        Booking result = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found after update: " + bookingId));
+
+        eventPublisher.publishEvent(
+                new BookingDomainEvent(bookingId, roomId, guestId, EventType.UPDATED)
+        );
+        return result;
     }
 
     @Transactional
     public void cancelBooking(UUID bookingId) {
-        if (bookingId == null) throw new ValidationException("bookingId is required");
+        if (bookingId == null){
+            throw new ValidationException("bookingId is required");
+        }
+
+        Booking existing = bookingDao.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking not found: " + bookingId));
 
         boolean cancelled = bookingDao.cancel(bookingId);
         if (!cancelled) {
             throw new NotFoundException("Booking not found or already cancelled: " + bookingId);
         }
+
+        eventPublisher.publishEvent(
+                new BookingDomainEvent(
+                        bookingId,
+                        existing.getRoom().getRoomId(),
+                        existing.getGuest().getGuestId(),
+                        EventType.CANCELLED
+                )
+        );
     }
+
 
     private void validateBookingDto(BookingDto dto) {
         if (dto == null) throw new ValidationException("BookingDto is null");
